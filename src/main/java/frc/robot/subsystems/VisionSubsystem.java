@@ -80,7 +80,7 @@ public class VisionSubsystem extends SubsystemBase {
     PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
 
     SmartDashboard.putData("vision/Field", field);
-    SmartDashboard.putData("vision/Calibrate", LoggedCommands.runOnce(this::calibrate, this).withName("Calibrate Vision").ignoringDisable(true));
+    SmartDashboard.putData("vision/Calibrate", LoggedCommands.runOnce("Calibrate Vision", this::calibrate, this).ignoringDisable(true));
   }
 
   public void enableRotationTargetOverride() { overrideRotation = true; }

@@ -71,10 +71,13 @@ public class ShooterIntakeCommand extends LoggedCommandBase {
 
     if (!interrupted) {
       CommandScheduler.getInstance().schedule(
-        LoggedCommands.startEnd(
-          () -> { controller.setRumble(RumbleType.kLeftRumble, 1.0); controller.setRumble(RumbleType.kRightRumble, 1.0); },
-          () -> { controller.setRumble(RumbleType.kLeftRumble, 0.0); controller.setRumble(RumbleType.kRightRumble, 0.0); })
-        .raceWith(LoggedCommands.waitSeconds(0.5)));
+        LoggedCommands.race(
+          "Rumble",
+          LoggedCommands.startEnd(
+            "Do rumble",
+            () -> { controller.setRumble(RumbleType.kLeftRumble, 1.0); controller.setRumble(RumbleType.kRightRumble, 1.0); },
+            () -> { controller.setRumble(RumbleType.kLeftRumble, 0.0); controller.setRumble(RumbleType.kRightRumble, 0.0); }),
+          LoggedCommands.waitSeconds("Rumble wait", 0.5)));
     }
   }
 

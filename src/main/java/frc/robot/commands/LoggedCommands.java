@@ -26,8 +26,8 @@ public class LoggedCommands {
     DogLog.log("Robot/Status", "Finished " + command.getName() + (interrupted ? " (interrupted)" : ""));
   }
 
-  public static Command log(Command command) {
-    return new WrapperCommand(command) { 
+  public static Command loggedCommand(Command command) {
+    Command loggedCommand = new WrapperCommand(command) { 
       @Override
       public void initialize() {
         logInit(command);
@@ -39,79 +39,88 @@ public class LoggedCommands {
         logFinish(command, interrupted);
         super.end(interrupted);
       }
-    }.withName(command.getName() + " (Logged)");
+    };
+    
+    loggedCommand.setName(command.getName() + " (Logged)");
+    return loggedCommand;
+  }
+
+  public static Command logWithName(String name, Command command) {
+    command.setName(name);
+    return loggedCommand(command);
   }
 
   /* The following map to the static utilities from the standard Commands class */
 
-  public static Command none() {
-    return log(Commands.none());
+  public static Command none(String name) {
+    return logWithName(name, Commands.none());
   }
 
-  public static Command idle(Subsystem... requirements) {
-    return log(Commands.idle(requirements));
+  public static Command idle(String name, Subsystem... requirements) {
+    return logWithName(name, Commands.idle(requirements));
   }
 
-  public static Command runOnce(Runnable action, Subsystem... requirements) {
-    return log(Commands.runOnce(action, requirements));
+  public static Command runOnce(String name, Runnable action, Subsystem... requirements) {
+    return logWithName(name, Commands.runOnce(action, requirements));
   }
 
-  public static Command run(Runnable action, Subsystem... requirements) {
-    return log(Commands.run(action, requirements));
+  public static Command run(String name, Runnable action, Subsystem... requirements) {
+    return logWithName(name, Commands.run(action, requirements));
   }
 
-  public static Command startEnd(Runnable start, Runnable end, Subsystem... requirements) {
-    return log(Commands.startEnd(start, end, requirements));
+  public static Command startEnd(String name, Runnable start, Runnable end, Subsystem... requirements) {
+    return logWithName(name, Commands.startEnd(start, end, requirements));
   }
 
-  public static Command runEnd(Runnable run, Runnable end, Subsystem... requirements) {
-    return log(Commands.runEnd(run, end, requirements));
+  public static Command runEnd(String name, Runnable run, Runnable end, Subsystem... requirements) {
+    return logWithName(name, Commands.runEnd(run, end, requirements));
   }
 
-  public static Command print(String message) {
-    return log(Commands.print(message));
+  public static Command print(String name, String message) {
+    return logWithName(name, Commands.print(message));
   }
 
-  public static Command waitSeconds(double seconds) {
-    return log(Commands.waitSeconds(seconds));
+  public static Command waitSeconds(String name, double seconds) {
+    return logWithName(name, Commands.waitSeconds(seconds));
   }
 
-  public static Command waitUntil(BooleanSupplier condition) {
-    return log(Commands.waitUntil(condition));
+  public static Command waitUntil(String name, BooleanSupplier condition) {
+    return logWithName(name, Commands.waitUntil(condition));
   }
 
-  public static Command either(Command onTrue, Command onFalse, BooleanSupplier selector) {
-    return log(Commands.either(onTrue, onFalse, selector));
+  public static Command either(String name, Command onTrue, Command onFalse, BooleanSupplier selector) {
+    return logWithName(name, Commands.either(onTrue, onFalse, selector));
   }
 
-  public static <K> Command select(Map<K, Command> commands, Supplier<? extends K> selector) {
-    return log(Commands.select(commands, selector));
+  public static <K> Command select(String name, Map<K, Command> commands, Supplier<? extends K> selector) {
+    return logWithName(name, Commands.select(commands, selector));
   }
-  public static Command defer(Supplier<Command> supplier, Set<Subsystem> requirements) {
-    return log(Commands.defer(supplier, requirements));
-  }
-
-  public static Command deferredProxy(Supplier<Command> supplier) {
-    return log(Commands.deferredProxy(supplier));
+  public static Command defer(String name, Supplier<Command> supplier, Set<Subsystem> requirements) {
+    return logWithName(name, Commands.defer(supplier, requirements));
   }
 
-  public static Command sequence(Command... commands) {
-    return log(Commands.sequence(commands));
+  public static Command deferredProxy(String name, Supplier<Command> supplier) {
+    return logWithName(name, Commands.deferredProxy(supplier));
   }
 
-  public static Command repeatingSequence(Command... commands) {
-    return log(Commands.repeatingSequence(commands));
+  public static Command sequence(String name, Command... commands) {
+    return logWithName(name, Commands.sequence(commands));
   }
 
-  public static Command parallel(Command... commands) {
-    return log(Commands.parallel(commands));
+  public static Command repeatingSequence(String name, Command... commands) {
+    return logWithName(name, Commands.repeatingSequence(commands));
   }
 
-  public static Command race(Command... commands) {
-    return log(Commands.race(commands));
+  public static Command parallel(String name, Command... commands) {
+    return logWithName(name, Commands.parallel(commands));
   }
-  public static Command deadline(Command deadline, Command... otherCommands) {
-    return log(Commands.deadline(deadline, otherCommands));
+
+  public static Command race(String name, Command... commands) {
+    return logWithName(name, Commands.race(commands));
+  }
+
+  public static Command deadline(String name, Command deadline, Command... otherCommands) {
+    return logWithName(name, Commands.deadline(deadline, otherCommands));
   }
 
   private LoggedCommands() {

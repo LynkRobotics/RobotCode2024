@@ -6,14 +6,13 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.IndexSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.LEDSubsystem.TempState;
 
-public class IntakeCommand extends Command {
+public class IntakeCommand extends LoggedCommandBase {
   private final IntakeSubsystem intake;
   private final IndexSubsystem index;
   private final GenericHID controller;
@@ -45,11 +44,13 @@ public class IntakeCommand extends Command {
 
     if (!interrupted) {
       CommandScheduler.getInstance().schedule(
-        LoggedCommands.startEnd(
-          () -> { controller.setRumble(RumbleType.kLeftRumble, 1.0); controller.setRumble(RumbleType.kRightRumble, 1.0); },
-          () -> { controller.setRumble(RumbleType.kLeftRumble, 0.0); controller.setRumble(RumbleType.kRightRumble, 0.0); }).withName("Do rumble")
-        .raceWith(LoggedCommands.waitSeconds(0.5).withName("Rumble -- wait"))
-        .withName("Rumble"));
+        LoggedCommands.race(
+          "Rumble",
+          LoggedCommands.startEnd(
+            "Do rumble",
+            () -> { controller.setRumble(RumbleType.kLeftRumble, 1.0); controller.setRumble(RumbleType.kRightRumble, 1.0); },
+            () -> { controller.setRumble(RumbleType.kLeftRumble, 0.0); controller.setRumble(RumbleType.kRightRumble, 0.0); }),
+          LoggedCommands.waitSeconds("Rumble wait", 0.5)));
     }
   }
 
