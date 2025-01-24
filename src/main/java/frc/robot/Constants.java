@@ -300,7 +300,7 @@ public final class Constants {
         public static final double maxAngleError = 1.0; // degrees
         public static final double calibrationFactorBlue = atHQ ? 0.98 : 1.0;
         public static final double calibrationOffsetBlue = atHQ ? Units.inchesToMeters(0.29) : Units.inchesToMeters(0.0);
-        public static final double calibrationFactorRed  = atHQ ? calibrationFactorBlue : 1.0;
+        public static final double calibrationFactorRed  = atHQ ? calibrationFactorBlue : 0.98;
         public static final double calibrationOffsetRed  = atHQ ? calibrationOffsetBlue : Units.inchesToMeters(0.0);
     }
 

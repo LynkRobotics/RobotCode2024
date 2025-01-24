@@ -17,6 +17,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 
 public class TeleopSwerve extends LoggedCommandBase {
     private final Swerve s_Swerve;
@@ -59,6 +61,9 @@ public class TeleopSwerve extends LoggedCommandBase {
         double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
         double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
+
+        double teleOpMult = SmartDashboard.getNumber("TeleOp Speed Governor", 1.0);
+        translationVal *= teleOpMult;
 
         if (s_Pose == null) {
             s_Pose = PoseSubsystem.getInstance();

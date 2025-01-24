@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 2.0,
+        "x": 1.4,
         "y": 6.744683307548434
       },
       "prevControl": {
-        "x": 3.6148682661001676,
+        "x": 3.0148682661001676,
         "y": 7.040502690096291
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Amp-side shot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],

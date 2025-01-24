@@ -172,6 +172,8 @@ public class RobotContainer {
         // SmartDashboard.putData(s_Shooter.runOnce(() -> { s_Shooter.setVoltage(SmartDashboard.getNumber("Shooter voltage direct", 0)); }).withName("Set shooter voltage"));
         // SmartDashboard.putData(s_Shooter.runOnce(() -> { s_Shooter.setVoltage(0); }).withName("Stop shooter"));
 
+        SmartDashboard.putNumber("TeleOp Speed Governor", 1.0);
+
         // Allow for direct RPM setting
         SmartDashboard.putNumber("Shooter top RPM", 1000.0);
         SmartDashboard.putNumber("Shooter bottom RPM", 1000.0);
