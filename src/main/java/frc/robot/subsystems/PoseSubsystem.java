@@ -6,11 +6,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.PathPlannerLogging;
-import com.pathplanner.lib.util.ReplanningConfig;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
@@ -20,11 +15,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.util.TunableOption;
 import frc.robot.Constants;
 import frc.robot.Constants.Pose;
 import frc.robot.Robot;
@@ -32,7 +25,6 @@ import frc.robot.Robot;
 public class PoseSubsystem extends SubsystemBase {
     private static PoseSubsystem instance;
     private final Swerve s_Swerve;
-    private final VisionSubsystem s_Vision;
 
     private final SwerveDrivePoseEstimator poseEstimator;
     private final Field2d field;
@@ -40,20 +32,17 @@ public class PoseSubsystem extends SubsystemBase {
     private static Rotation2d targetAngle = null;
     private static Zone zone = Zone.SPEAKER;
 
-    private static final TunableOption optUpdatePoseWithVisionAuto = new TunableOption("pose/Update with vision in Auto", false);
-
     public enum Zone {
         SPEAKER,
         MIDDLE,
         FAR
     }
 
-    public PoseSubsystem(Swerve s_Swerve, VisionSubsystem s_Vision) {
+    public PoseSubsystem(Swerve s_Swerve) {
         assert(instance == null);
         instance = this;
         
         this.s_Swerve = s_Swerve;
-        this.s_Vision = s_Vision;
 
         gyro = new Pigeon2(Pose.pigeonID, Constants.Swerve.swerveCanBus);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
@@ -71,34 +60,6 @@ public class PoseSubsystem extends SubsystemBase {
 
         field = new Field2d();
         SmartDashboard.putData("pose/Field", field);
-
-        AutoBuilder.configureHolonomic(
-            this::getPose,
-            this::setPose,
-            s_Swerve::getSpeeds, 
-            s_Swerve::driveRobotRelativeAuto,
-            // TODO Configure PIDs
-            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                new PIDConstants(8.0, 0.0, 0.0), // Translation PID constants
-                new PIDConstants(1.5, 0.0, 0.0), // Rotation PID constants
-                Constants.Swerve.maxSpeed, // Max module speed, in m/s
-                Constants.Swerve.driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.
-                new ReplanningConfig() // Default path replanning config. See the API for the options here
-            ),
-            Robot::isRed,
-            s_Swerve // Reference to Swerve subsystem to set requirements
-        );
-
-        PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> {
-            DogLog.log("Pose/Auto Target Pose", targetPose);
-        });
-        PathPlannerLogging.setLogActivePathCallback((activePath) -> {
-            DogLog.log("Pose/Active Path", activePath.toArray(Pose2d[]::new)); //we have to convert the List of poses PathPlanner gives us to an array because DogLog does not support list, fourtunetely aScope doesn't care whether its a list or an array
-        });
-        PathPlannerLogging.setLogCurrentPoseCallback((currentPose) -> {
-            DogLog.log("Pose/PP Current Pose", currentPose);
-        });
-
     }
 
     public static PoseSubsystem getInstance() {
@@ -110,7 +71,7 @@ public class PoseSubsystem extends SubsystemBase {
     }
     
     public Rotation2d getGyroYaw() {
-        return Rotation2d.fromDegrees(gyro.getYaw().getValue());
+        return Rotation2d.fromDegrees(gyro.getYaw().getValueAsDouble());
     }
 
     public void zeroGyro() {
@@ -119,7 +80,7 @@ public class PoseSubsystem extends SubsystemBase {
     }
 
     public void hack() {
-        gyro.setYaw(gyro.getYaw().getValue() + 180.0);
+        gyro.setYaw(gyro.getYaw().getValueAsDouble() + 180.0);
     }
 
     public Pose2d getPose() {
@@ -197,7 +158,7 @@ public class PoseSubsystem extends SubsystemBase {
 
     public boolean dumpShotAligned() {
         if (Math.abs(dumpShotError().getDegrees()) < Pose.maxDumpError) {
-            if (Math.abs(Pose.rotationPID.getVelocityError()) < Constants.Shooter.dumpShotVelocityErrorMax) {
+            if (Math.abs(Pose.rotationPID.getErrorDerivative()) < Constants.Shooter.dumpShotVelocityErrorMax) {
                 return true;
             } else {
                 return false;
@@ -217,7 +178,7 @@ public class PoseSubsystem extends SubsystemBase {
 
     public boolean slideShotAligned() {
         if (Math.abs(slideShotError().getDegrees()) < Pose.maxSlideError) {
-            if (Math.abs(Pose.rotationPID.getVelocityError()) < Constants.Shooter.slideShotVelocityErrorMax) {
+            if (Math.abs(Pose.rotationPID.getErrorDerivative()) < Constants.Shooter.slideShotVelocityErrorMax) {
                 return true;
             } else {
                 return false;
@@ -234,7 +195,7 @@ public class PoseSubsystem extends SubsystemBase {
 
     public boolean shuttleShotAligned() {
         if (Math.abs(shuttleShotError().getDegrees()) < Pose.maxShuttleError) {
-            if (Math.abs(Pose.rotationPID.getVelocityError()) < Constants.Shooter.shuttleShotVelocityErrorMax) {
+            if (Math.abs(Pose.rotationPID.getErrorDerivative()) < Constants.Shooter.shuttleShotVelocityErrorMax) {
                 return true;
             } else {
                 return false;
@@ -251,7 +212,7 @@ public class PoseSubsystem extends SubsystemBase {
 
     public boolean farShuttleShotAligned() {
         if (Math.abs(farShuttleShotError().getDegrees()) < Pose.maxShuttleError) {
-            if (Math.abs(Pose.rotationPID.getVelocityError()) < Constants.Shooter.shuttleShotVelocityErrorMax) {
+            if (Math.abs(Pose.rotationPID.getErrorDerivative()) < Constants.Shooter.shuttleShotVelocityErrorMax) {
                 return true;
             } else {
                 return false;
@@ -341,11 +302,6 @@ public class PoseSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         poseEstimator.update(getGyroYaw(), s_Swerve.getModulePositions());
-        if (!DriverStation.isAutonomousEnabled() || optUpdatePoseWithVisionAuto.get()) {
-            s_Vision.updatePoseEstimate(poseEstimator);
-        } else {
-            s_Vision.updatePoseEstimate(null);
-        }
 
         Pose2d pose = getPose();
         field.setRobotPose(pose);
