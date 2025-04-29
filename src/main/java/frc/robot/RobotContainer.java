@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import static frc.robot.Options.*;
-import frc.robot.subsystems.ClimberSubsystem.ClimberSelection;
 import frc.robot.subsystems.ShooterSubsystem.Speed;
 
 /**
@@ -41,22 +40,17 @@ public class RobotContainer {
     private final Trigger intakeButton = driver.leftBumper();
     private final Trigger shooterButton = driver.rightBumper();
     private final Trigger ejectButton = driver.start();
-    private final Trigger leftClimberButton = driver.leftTrigger();
-    private final Trigger rightClimberButton = driver.rightTrigger();
     
     /* Different Position Test Buttons */
     private final Trigger ampButton = driver.a();
     private final Trigger defaultShotButton = driver.back();
     private final Trigger slideShotButton = driver.x();
-    private final Trigger climberExtendButton = driver.y();
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final IntakeSubsystem s_Intake = new IntakeSubsystem();
     private final ShooterSubsystem s_Shooter = new ShooterSubsystem();
     private final IndexSubsystem s_Index = new IndexSubsystem();
-    private final ClimberSubsystem s_LeftClimber = new ClimberSubsystem(ClimberSelection.LEFT);
-    private final ClimberSubsystem s_RightClimber = new ClimberSubsystem(ClimberSelection.RIGHT);
     @SuppressWarnings ("unused")
     private final LEDSubsystem s_Led = new LEDSubsystem();
     @SuppressWarnings ("unused")
@@ -91,21 +85,6 @@ public class RobotContainer {
         SmartDashboard.putData("Zero Gyro", Commands.print("Zeroing gyro").andThen(Commands.runOnce(s_Pose::zeroGyro, s_Swerve)).andThen(Commands.print("Gyro zeroed")).withName("Zero Gyro")); //TODO: Test
         SmartDashboard.putData("Zero heading", Commands.print("Zeroing heading").andThen(Commands.runOnce(s_Pose::zeroHeading, s_Swerve)).andThen(Commands.print("Heading zeroed")).withName("Zero heading")); //TODO: Test
         SmartDashboard.putData("Reset heading", Commands.print("Resetting heading").andThen(Commands.runOnce(s_Pose::resetHeading, s_Swerve)).andThen(Commands.print("Heading reset")).withName("Reset heading"));
-
-        // Allow for direct climber control
-        SmartDashboard.putData("Stop climbers", Commands.runOnce(() -> { s_LeftClimber.stop(); s_RightClimber.stop(); }, s_LeftClimber, s_RightClimber));
-        SmartDashboard.putData("Left down slow", Commands.runOnce(() -> { s_LeftClimber.applyVoltage(Constants.Climber.slowVoltage); }, s_LeftClimber));
-        SmartDashboard.putData("Right down slow", Commands.runOnce(() -> { s_RightClimber.applyVoltage(Constants.Climber.slowVoltage); }, s_RightClimber));
-
-        SmartDashboard.putNumber("Left climber voltage", 0.0);
-        SmartDashboard.putNumber("Right climber voltage", 0.0);
-        SmartDashboard.putData("Set climber voltage", Commands.runOnce(() -> { s_LeftClimber.applyVoltage(SmartDashboard.getNumber("Left climber voltage", 0.0)); s_RightClimber.applyVoltage(SmartDashboard.getNumber("Right climber voltage", 0.0));}, s_LeftClimber, s_RightClimber));
-        SmartDashboard.putData("Zero climbers", Commands.runOnce(() -> { s_LeftClimber.zero(); s_RightClimber.zero(); }, s_LeftClimber, s_RightClimber));
-
-        SmartDashboard.putNumber("Left climber target position", 0.0);
-        SmartDashboard.putData("Set left climber position", new ClimberPositionCommand(SmartDashboard.getNumber("Left climber target position", 0.0), LEDSubsystem.TempState.RETRACTING, s_LeftClimber));
-        SmartDashboard.putNumber("Right climber target position", 0.0);
-        SmartDashboard.putData("Set right climber position", new ClimberPositionCommand(SmartDashboard.getNumber("Right climber target position", 0.0), LEDSubsystem.TempState.RETRACTING, s_RightClimber));
 
         SmartDashboard.putData("autoSetup/SetSwerveCoast", Commands.runOnce(() -> { DogLog.log("Auto/Status", "Coasting Swerve Motors");}).andThen(Commands.runOnce(s_Swerve::setMotorsToCoast, s_Swerve)).andThen(Commands.runOnce(() -> { DogLog.log("Auto/Status", "Swerve Motors Coasted");})).ignoringDisable(true));
         SmartDashboard.putData("autoSetup/SetSwerveBrake", Commands.runOnce(() -> { DogLog.log("Auto/Status", "Braking Swerve Motors");}).andThen(Commands.runOnce(s_Swerve::setMotorsToBrake, s_Swerve)).andThen(Commands.runOnce(() -> { DogLog.log("Auto/Status", "Swerve Motors Braked");})).ignoringDisable(true));
@@ -151,25 +130,7 @@ public class RobotContainer {
             new ShootCommand(s_Shooter, s_Index),
             optDirectRPM)
             .withName("Shoot"));
-        climberExtendButton.onTrue(
-            Commands.sequence(
-                Commands.runOnce(s_Swerve::enableSpeedLimit),
-                Commands.parallel(
-                    new ClimberPositionCommand(Constants.Climber.extendedPosition, LEDSubsystem.TempState.EXTENDING, s_LeftClimber),
-                    new ClimberPositionCommand(Constants.Climber.extendedPosition, LEDSubsystem.TempState.EXTENDING, s_RightClimber)))
-            .withName("Extend Climbers"));
         SmartDashboard.putData("Disable speed limit", Commands.runOnce(s_Swerve::disableSpeedLimit));
-        // climberExtendButton.onTrue(
-        //     Commands.either(
-        //         new ClimberPositionCommand(Constants.Climber.extendedPosition, LEDSubsystem.TempState.EXTENDING, s_LeftClimber)
-        //         .alongWith(new ClimberPositionCommand(Constants.Climber.extendedPosition, LEDSubsystem.TempState.EXTENDING, s_RightClimber)),
-        //         new ClimberPositionCommand(Constants.Climber.midPosition, LEDSubsystem.TempState.EXTENDING, s_LeftClimber)
-        //         .alongWith(new ClimberPositionCommand(Constants.Climber.midPosition, LEDSubsystem.TempState.EXTENDING, s_RightClimber)),
-        //         () -> s_LeftClimber.getPosition() < Constants.Climber.midPosition + 2 * Constants.Climber.positionError ||
-        //               s_RightClimber.getPosition() < Constants.Climber.midPosition + 2 * Constants.Climber.positionError));
-
-        leftClimberButton.whileTrue(new ClimberPositionCommand(Constants.Climber.retractedPosition, LEDSubsystem.TempState.RETRACTING, s_LeftClimber));
-        rightClimberButton.whileTrue(new ClimberPositionCommand(Constants.Climber.retractedPosition, LEDSubsystem.TempState.RETRACTING, s_RightClimber));
 
         /* Buttons to set the next shot */
         ampButton.onTrue(Commands.runOnce(s_Shooter::toggleAmp).withName("Toggle amp shot"));
