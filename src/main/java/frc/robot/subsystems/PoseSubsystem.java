@@ -39,14 +39,14 @@ public class PoseSubsystem extends SubsystemBase {
     }
 
     public PoseSubsystem(Swerve s_Swerve) {
-        assert(instance == null);
+        assert (instance == null);
         instance = this;
-        
+
         this.s_Swerve = s_Swerve;
 
         gyro = new Pigeon2(Pose.pigeonID, Constants.Swerve.swerveCanBus);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
-        gyro.setYaw(0);        
+        gyro.setYaw(0);
 
         Pose.rotationPID.enableContinuousInput(-180.0, 180.0);
         Pose.rotationPID.setIZone(Pose.rotationIZone); // Only use Integral term within this range
@@ -56,7 +56,8 @@ public class PoseSubsystem extends SubsystemBase {
         Pose.maintainPID.setIZone(Pose.rotationIZone); // Only use Integral term within this range
         Pose.maintainPID.reset();
 
-        poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getGyroYaw(), s_Swerve.getModulePositions(), new Pose2d());
+        poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getGyroYaw(),
+                s_Swerve.getModulePositions(), new Pose2d());
 
         field = new Field2d();
         SmartDashboard.putData("pose/Field", field);
@@ -65,11 +66,11 @@ public class PoseSubsystem extends SubsystemBase {
     public static PoseSubsystem getInstance() {
         return instance;
     }
-    
+
     public static String prettyPose(Pose2d pose) {
         return String.format("(%01.2f, %01.2f @ %01.1f)", pose.getX(), pose.getY(), pose.getRotation().getDegrees());
     }
-    
+
     public Rotation2d getGyroYaw() {
         return Rotation2d.fromDegrees(gyro.getYaw().getValueAsDouble());
     }
@@ -97,7 +98,8 @@ public class PoseSubsystem extends SubsystemBase {
     }
 
     public void setHeading(Rotation2d heading) {
-        poseEstimator.resetPosition(getGyroYaw(), s_Swerve.getModulePositions(), new Pose2d(getPose().getTranslation(), heading));
+        poseEstimator.resetPosition(getGyroYaw(), s_Swerve.getModulePositions(),
+                new Pose2d(getPose().getTranslation(), heading));
     }
 
     public void zeroHeading() {
@@ -129,27 +131,9 @@ public class PoseSubsystem extends SubsystemBase {
         return (Robot.isRed() ? Pose.redFarShuttleLocation : Pose.blueFarShuttleLocation);
     }
 
-    public double distanceToSpeaker() {
-        double distance = getPose().getTranslation().getDistance(PoseSubsystem.getInstance().speakerLocation()); // distance from center of robot to speaker 
-        distance += Constants.Vision.centerToReferenceOffset; // distance from center of robot to reference point
-        return distance;
-    }
-
-    public double distanceToShuttle() {
-        double distance = getPose().getTranslation().getDistance(PoseSubsystem.getInstance().shuttleLocation()); // distance from center of robot to shuttle location
-        distance += Constants.Vision.centerToReferenceOffset; // distance from center of robot to reference point
-        return distance;
-    }
-
-    public double distanceToFarShuttle() {
-        double distance = getPose().getTranslation().getDistance(PoseSubsystem.getInstance().farShuttleLocation()); // distance from center of robot to far shuttle location
-        distance += Constants.Vision.centerToReferenceOffset; // distance from center of robot to reference point
-        return distance;
-    }
-
     public Rotation2d dumpShotError() {
         Rotation2d robotAngle = getPose().getRotation();
-        if (Robot.isRed()){
+        if (Robot.isRed()) {
             return Pose.redDumpAngle.minus(robotAngle);
         } else {
             return Pose.blueDumpAngle.minus(robotAngle);
@@ -169,7 +153,7 @@ public class PoseSubsystem extends SubsystemBase {
 
     public Rotation2d slideShotError() {
         Rotation2d robotAngle = getPose().getRotation();
-        if (Robot.isRed()){
+        if (Robot.isRed()) {
             return Pose.redSlideAngle.minus(robotAngle);
         } else {
             return Pose.blueSlideAngle.minus(robotAngle);
@@ -271,7 +255,7 @@ public class PoseSubsystem extends SubsystemBase {
     public static void setTargetAngle(Rotation2d angle) {
         targetAngle = angle;
     }
-    
+
     public static Rotation2d getTargetAngle() {
         return targetAngle;
     }
@@ -290,7 +274,7 @@ public class PoseSubsystem extends SubsystemBase {
         DogLog.log("Pose/Angle PID correction", correction);
         DogLog.log("Pose/Angle feedforward", feedForward);
         DogLog.log("Pose/Angle output", output);
-        
+
         // Invert due to use as joystick controls
         return -output;
     }
