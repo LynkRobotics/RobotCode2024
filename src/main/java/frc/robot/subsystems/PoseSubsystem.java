@@ -309,11 +309,8 @@ public class PoseSubsystem extends SubsystemBase {
 
         SmartDashboard.putNumber("pose/Gyro", getHeading().getDegrees());
         SmartDashboard.putString("pose/Pose", prettyPose(pose));
-
+        
         DogLog.log("Pose/Pose", pose);
-        DogLog.log("Pose/Distance to speaker", Units.metersToInches(distanceToSpeaker()));
-        DogLog.log("Pose/Distance to shuttle", Units.metersToInches(distanceToShuttle()));
-        DogLog.log("Pose/Distance to far shuttle", Units.metersToInches(distanceToFarShuttle()));
         DogLog.log("Pose/Gyro/Heading", getHeading().getDegrees());
         DogLog.log("Pose/Gyro/Raw Yaw", getGyroYaw());
     }
