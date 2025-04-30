@@ -73,7 +73,6 @@ public class Robot extends TimedRobot {
     DogLog.log("Misc/Robot Status", "Auto has begun");
     LEDSubsystem.setBaseState(BaseState.READY);
 
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
