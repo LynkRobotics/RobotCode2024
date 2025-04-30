@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import dev.doglog.DogLog;
 import dev.doglog.DogLogOptions;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import static frc.robot.Options.*;
-import frc.robot.subsystems.ShooterSubsystem.Speed;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -41,11 +39,6 @@ public class RobotContainer {
     private final Trigger shooterButton = driver.rightBumper();
     private final Trigger ejectButton = driver.start();
     
-    /* Different Position Test Buttons */
-    private final Trigger ampButton = driver.a();
-    private final Trigger defaultShotButton = driver.back();
-    private final Trigger slideShotButton = driver.x();
-
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final IntakeSubsystem s_Intake = new IntakeSubsystem();
@@ -132,16 +125,7 @@ public class RobotContainer {
             .withName("Shoot"));
         SmartDashboard.putData("Disable speed limit", Commands.runOnce(s_Swerve::disableSpeedLimit));
 
-        /* Buttons to set the next shot */
-        ampButton.onTrue(Commands.runOnce(s_Shooter::toggleAmp).withName("Toggle amp shot"));
-        defaultShotButton.onTrue(Commands.runOnce(() -> { s_Shooter.setNextShot(null); }).withName("Set default shot"));
-        slideShotButton.onTrue(Commands.runOnce(() -> { s_Shooter.setNextShot(Speed.SLIDE); }).withName("Set slide shot"));
-
         ejectButton.whileTrue(new EjectCommand(s_Intake, s_Index, s_Shooter));
-
-        SmartDashboard.putData("pose/Align to zero", Commands.runOnce(() -> { PoseSubsystem.setTargetAngle(new Rotation2d()); }).withName("Align to zero"));
-        SmartDashboard.putData("pose/Align to 90", Commands.runOnce(() -> { PoseSubsystem.setTargetAngle(new Rotation2d(Math.PI / 2.0)); }).withName("Align to 90"));
-        SmartDashboard.putData("pose/Clear target angle", Commands.runOnce(() -> { PoseSubsystem.setTargetAngle(null); }).withName("Clear target angle"));
     }
 
     /**
