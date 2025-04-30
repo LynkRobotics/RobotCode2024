@@ -26,8 +26,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final VelocityVoltage bottomControl = new VelocityVoltage(0).withEnableFOC(true);
     private double topCurrentTarget = 0.0;
     private double bottomCurrentTarget = 0.0;
-    SendableChooser<Speed> defaultShotChooser = new SendableChooser<>();
-    private boolean autoAimingActive = false;
+    SendableChooser<Speed> shotChooser = new SendableChooser<>();
 
     private class ShooterSpeed {
         double topMotorSpeed;
@@ -42,35 +41,21 @@ public class ShooterSubsystem extends SubsystemBase {
     public enum Speed {
         STOP,
         INTAKE,
-        AMP,
-        SUBWOOFER,
-        AMPSIDE,
-        MIDLINE,
-        PODIUM,
-        FULL,
-        SHORTSLIDE,
-        SLIDE,
-        SPECIAL,
         EJECT,
-        BLOOP
+        SHORT,
+        MEDIUM,
+        SLIDE,
+        FULL
     };
-
-    private Speed nextShot = null;
 
     private final EnumMap<Speed, ShooterSpeed> shooterSpeeds = new EnumMap<>(Map.ofEntries(
             Map.entry(Speed.STOP, new ShooterSpeed(Constants.Shooter.stopSpeed, Constants.Shooter.stopSpeed)),
             Map.entry(Speed.INTAKE, new ShooterSpeed(Constants.Shooter.intakeSpeed, Constants.Shooter.intakeSpeed)),
-            Map.entry(Speed.AMP, new ShooterSpeed(375, 1025)),
-            Map.entry(Speed.SUBWOOFER, new ShooterSpeed(1360, 2830)),
-            Map.entry(Speed.AMPSIDE, new ShooterSpeed(2850, 2050)),
-            Map.entry(Speed.MIDLINE, new ShooterSpeed(2800, 2300)),
-            Map.entry(Speed.PODIUM, new ShooterSpeed(3000, 1600)),
-            Map.entry(Speed.FULL, new ShooterSpeed(Constants.Shooter.topSpeed, Constants.Shooter.topSpeed)),
-            Map.entry(Speed.SHORTSLIDE, new ShooterSpeed(2250, 900)),
-            Map.entry(Speed.SLIDE, new ShooterSpeed(2500, 1000)),
-            Map.entry(Speed.SPECIAL, new ShooterSpeed(1180, 1180)),
             Map.entry(Speed.EJECT, new ShooterSpeed(-800, -800)),
-            Map.entry(Speed.BLOOP, new ShooterSpeed(400, 400))));
+            Map.entry(Speed.SHORT, new ShooterSpeed(400, 400)),
+            Map.entry(Speed.MEDIUM, new ShooterSpeed(1360, 2830)),
+            Map.entry(Speed.SLIDE, new ShooterSpeed(2250, 900)),
+            Map.entry(Speed.FULL, new ShooterSpeed(Constants.Shooter.topSpeed, Constants.Shooter.topSpeed))));
 
     public ShooterSubsystem() {
         top = new TalonFX(Constants.Shooter.topShooterID, Constants.Shooter.shooterMotorCanBus);
@@ -80,13 +65,13 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("shooter/Top RPM adjustment", 0.0);
         SmartDashboard.putNumber("shooter/Bottom RPM adjustment", 0.0);
 
-        defaultShotChooser.setDefaultOption("SUBWOOFER", Speed.SUBWOOFER);
+        shotChooser.setDefaultOption("STOP", Speed.STOP);
         for (Speed speed : Speed.values()) {
-            if (speed != Speed.SUBWOOFER) {
-                defaultShotChooser.addOption(speed.toString(), speed);
+            if (speed != Speed.STOP) {
+                shotChooser.addOption(speed.toString(), speed);
             }
         }
-        SmartDashboard.putData("shooter/Default shot", defaultShotChooser);
+        SmartDashboard.putData("shooter/Default shot", shotChooser);
     }
 
     private void applyConfigs() {
@@ -122,20 +107,12 @@ public class ShooterSubsystem extends SubsystemBase {
         return rpm / 60.0;
     }
 
-    public void setNextShot(Speed speed) {
-        nextShot = speed;
-    }
-
-    public boolean isAutoAimingActive() {
-        return autoAimingActive;
-    }
-
     public boolean shoot() {
-        return setCurrentSpeed(nextShot);
+        return setCurrentSpeed((Speed)null);
     }
 
     private Speed defaultSpeed() {
-        return defaultShotChooser.getSelected();
+        return shotChooser.getSelected();
     }
 
     private boolean setCurrentSpeed(Speed speed) {
@@ -192,26 +169,12 @@ public class ShooterSubsystem extends SubsystemBase {
                         : Constants.Shooter.maxRPMError));
     }
 
-    public boolean shootingDefault() {
-        return nextShot == null;
-    }
-
-    public void toggleAmp() {
-        if (nextShot == null || nextShot != Speed.AMP) {
-            nextShot = Speed.AMP;
-        } else {
-            nextShot = null;
-        }
-    }
-
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
         double topVel = toRPM(top.getVelocity().getValueAsDouble());
         double bottomVel = toRPM(bottom.getVelocity().getValueAsDouble());
         SmartDashboard.putBoolean("shooter/ready", isReady(false));
-        SmartDashboard.putString("shooter/Next shot",
-            nextShot == null ? defaultSpeed().toString() : nextShot.toString());
 
         DogLog.log("Shooter/Top RPM", topVel);
         DogLog.log("Shooter/Bottom RPM", bottomVel);
@@ -220,6 +183,5 @@ public class ShooterSubsystem extends SubsystemBase {
         DogLog.log("Shooter/Top RPM err", topVel - topCurrentTarget);
         DogLog.log("Shooter/Bottom RPM err", bottomVel - bottomCurrentTarget);
         DogLog.log("Shooter/Ready", isReady(false));
-        DogLog.log("Shooter/Next shot", nextShot == null ? defaultSpeed().toString() : nextShot.toString());
     }
 }
