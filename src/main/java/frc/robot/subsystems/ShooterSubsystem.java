@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -66,10 +67,8 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("shooter/Bottom RPM adjustment", 0.0);
 
         shotChooser.setDefaultOption("SHORT", Speed.SHORT);
-        for (Speed speed : Speed.values()) {
-            if (speed != Speed.SHORT) {
-                shotChooser.addOption(speed.toString(), speed);
-            }
+        for (Speed speed : Set.of(Speed.MEDIUM, Speed.SLIDE, Speed.FULL)) {
+            shotChooser.addOption(speed.toString(), speed);
         }
         SmartDashboard.putData("shooter/Default shot", shotChooser);
     }
