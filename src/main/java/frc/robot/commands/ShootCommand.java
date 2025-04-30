@@ -70,7 +70,7 @@ public class ShootCommand extends Command {
         if (cancelled) {
             return;
         }
-        if (!feeding && shooter.isReady(false)) {
+        if (!feeding && shooter.isReady()) {
             index.feed();
             feeding = true;
         }

@@ -17,7 +17,6 @@ public final class Constants {
     public static final double stickDeadband = 0.1;
     public static final double driveStickSensitivity = 1.00; 
     public static final double turnStickSensitivity = 1.00;
-    public static final double aimingOverride = 0.001;
 
     public static final class Swerve {
         public static final String swerveCanBus = "lynk";
@@ -190,11 +189,7 @@ public final class Constants {
         public static final double intakeSpeed = -800;
         public static final double stopSpeed = 0.00;
         public static final double topSpeed = 6000;
-        public static final double maxRPMError = 60.0;
-        public static final double maxRPMErrorLong = 30.0;
-        public static final double slideShotVelocityErrorMax = 100.0;
-        public static final double dumpShotVelocityErrorMax = 60.0;
-        public static final double shuttleShotVelocityErrorMax = 75.0;
+        public static final double maxRPMError = 45.0;
         /* Motor Config Values */
         public static final double peakForwardVoltage = 12.0;
         public static final double peakReverseVoltage = -12.0;
@@ -222,8 +217,6 @@ public final class Constants {
         public static final double softFeedSpeed = 0.25;
         public static final double ejectSpeed = -1.00;
         public static final double stopSpeed = 0.00;
-        /* Timer Values */
-        public static final double waitToShootTime = 0.75;
         /* Motor Config Values */
         public static final double peakForwardVoltage = 12.0;
         public static final double peakReverseVoltage = -12.0;

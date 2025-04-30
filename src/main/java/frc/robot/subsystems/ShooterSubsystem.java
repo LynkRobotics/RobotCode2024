@@ -162,11 +162,9 @@ public class ShooterSubsystem extends SubsystemBase {
         setCurrentSpeed(Speed.STOP);
     }
 
-    public boolean isReady(boolean precise) {
-        return (Math.abs(toRPM(top.getVelocity().getValueAsDouble()) - topCurrentTarget) < (precise ? Constants.Shooter.maxRPMErrorLong : Constants.Shooter.maxRPMError) &&
-                Math.abs(toRPM(bottom.getVelocity().getValueAsDouble()) - bottomCurrentTarget) < (precise
-                        ? Constants.Shooter.maxRPMErrorLong
-                        : Constants.Shooter.maxRPMError));
+    public boolean isReady() {
+        return (Math.abs(toRPM(top.getVelocity().getValueAsDouble()) - topCurrentTarget) < Constants.Shooter.maxRPMError &&
+                Math.abs(toRPM(bottom.getVelocity().getValueAsDouble()) - bottomCurrentTarget) < Constants.Shooter.maxRPMError);
     }
 
     @Override
@@ -174,7 +172,7 @@ public class ShooterSubsystem extends SubsystemBase {
         // This method will be called once per scheduler run
         double topVel = toRPM(top.getVelocity().getValueAsDouble());
         double bottomVel = toRPM(bottom.getVelocity().getValueAsDouble());
-        SmartDashboard.putBoolean("shooter/ready", isReady(false));
+        SmartDashboard.putBoolean("shooter/ready", isReady());
 
         DogLog.log("Shooter/Top RPM", topVel);
         DogLog.log("Shooter/Bottom RPM", bottomVel);
@@ -182,6 +180,6 @@ public class ShooterSubsystem extends SubsystemBase {
         DogLog.log("Shooter/Bottom RPM tgt", bottomCurrentTarget);
         DogLog.log("Shooter/Top RPM err", topVel - topCurrentTarget);
         DogLog.log("Shooter/Bottom RPM err", bottomVel - bottomCurrentTarget);
-        DogLog.log("Shooter/Ready", isReady(false));
+        DogLog.log("Shooter/Ready", isReady());
     }
 }
