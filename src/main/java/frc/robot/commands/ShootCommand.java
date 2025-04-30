@@ -89,9 +89,6 @@ public class ShootCommand extends Command {
         // Stop shooter wheels
         shooter.stop();
 
-        // Restore default shot
-        shooter.setNextShot(null);
-
         // Adjust LED state
         if (interrupted) {
             LEDSubsystem.setTempState(TempState.ERROR);
