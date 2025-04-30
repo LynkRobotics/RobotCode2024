@@ -58,17 +58,12 @@ public class RobotContainer {
                         () -> -translation.get() * Constants.driveStickSensitivity,
                         () -> -strafe.get() * Constants.driveStickSensitivity,
                         () -> -rotation.get() * Constants.turnStickSensitivity,
-                        s_Swerve::getSpeedLimitRot));
+                        () -> SmartDashboard.getNumber("TeleOp Speed Governor", 0.20)));
 
         s_Shooter.setDefaultCommand(Commands.startEnd(s_Shooter::stop, () -> {}, s_Shooter).withName("Shooter stop"));
         s_Index.setDefaultCommand(Commands.startEnd(s_Index::stop, () -> {}, s_Index).withName("Index Stop"));
 
-        // During calibration allow for direct control
-        //SmartDashboard.putNumber("Shooter voltage direct", 0.0);
-        //SmartDashboard.putData("Set shooter voltage", s_Shooter.runOnce(() -> { s_Shooter.setVoltage(SmartDashboard.getNumber("Shooter voltage direct", 0)); }));
-        //SmartDashboard.putData("Stop shooter", s_Shooter.runOnce(() -> { s_Shooter.setVoltage(0); }));
-
-        SmartDashboard.putNumber("TeleOp Speed Governor", 0.35);
+        SmartDashboard.putNumber("TeleOp Speed Governor", 0.20);
 
         // Allow for direct RPM setting
         SmartDashboard.putNumber("Shooter top RPM", 1000.0);

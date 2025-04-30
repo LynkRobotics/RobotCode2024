@@ -65,9 +65,9 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("shooter/Top RPM adjustment", 0.0);
         SmartDashboard.putNumber("shooter/Bottom RPM adjustment", 0.0);
 
-        shotChooser.setDefaultOption("STOP", Speed.STOP);
+        shotChooser.setDefaultOption("SHORT", Speed.SHORT);
         for (Speed speed : Speed.values()) {
-            if (speed != Speed.STOP) {
+            if (speed != Speed.SHORT) {
                 shotChooser.addOption(speed.toString(), speed);
             }
         }

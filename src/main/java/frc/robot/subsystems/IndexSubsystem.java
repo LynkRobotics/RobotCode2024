@@ -23,8 +23,8 @@ public class IndexSubsystem extends SubsystemBase {
   private final DigitalInput leftIndexSensor;
   private final DigitalInput rightIndexSensor;
   private boolean haveNote = false;
-  private static final TunableOption optLeftIndexSensorEnabled = new TunableOption("indexer/Left index sensor enabled", false);
-  private static final TunableOption optRightIndexSensorEnabled = new TunableOption("indexer/Right index sensor enabled", true);
+  private static final TunableOption optLeftIndexSensorEnabled = new TunableOption("indexer/Left index sensor enabled", true);
+  private static final TunableOption optRightIndexSensorEnabled = new TunableOption("indexer/Right index sensor enabled", false);
 
   public IndexSubsystem() {
     assert(instance == null);
