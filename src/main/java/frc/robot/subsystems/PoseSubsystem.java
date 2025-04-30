@@ -29,13 +29,6 @@ public class PoseSubsystem extends SubsystemBase {
     private final Field2d field;
     private final Pigeon2 gyro;
     private static Rotation2d targetAngle = null;
-    private static Zone zone = Zone.SPEAKER;
-
-    public enum Zone {
-        SPEAKER,
-        MIDDLE,
-        FAR
-    }
 
     public PoseSubsystem(Swerve s_Swerve) {
         assert (instance == null);
@@ -278,38 +271,12 @@ public class PoseSubsystem extends SubsystemBase {
         return -output;
     }
 
-    public static Zone getZone() {
-        return zone;
-    }
-
     @Override
     public void periodic() {
         poseEstimator.update(getGyroYaw(), s_Swerve.getModulePositions());
 
-        Pose2d pose = getPose();
-        field.setRobotPose(pose);
-        double distance = pose.getTranslation().getX();
-        if (Robot.isRed()) {
-            distance = Constants.Pose.fieldLength - distance;
-        }
-        if (distance > Constants.Pose.zoneSourceStart) {
-            if (distance > Constants.Pose.zoneMiddleEnd || zone != Zone.MIDDLE) {
-                zone = Zone.FAR;
-            }
-        } else if (distance < Constants.Pose.zoneSpeakerEnd) {
-            if (distance < Constants.Pose.zoneMiddleStart || zone != Zone.MIDDLE) {
-                zone = Zone.SPEAKER;
-            }
-        } else {
-            zone = Zone.MIDDLE;
-        }
-        DogLog.log("Pose/Zone", zone);
-        SmartDashboard.putString("pose/Zone", zone.toString());
-
         SmartDashboard.putNumber("pose/Gyro", getHeading().getDegrees());
-        SmartDashboard.putString("pose/Pose", prettyPose(pose));
 
-        DogLog.log("Pose/Pose", pose);
         DogLog.log("Pose/Gyro/Heading", getHeading().getDegrees());
         DogLog.log("Pose/Gyro/Raw Yaw", getGyroYaw());
     }
