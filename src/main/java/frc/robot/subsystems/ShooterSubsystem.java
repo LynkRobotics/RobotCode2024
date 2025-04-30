@@ -42,7 +42,6 @@ public class ShooterSubsystem extends SubsystemBase {
     public enum Speed {
         STOP,
         INTAKE,
-        IDLE,
         AMP,
         SUBWOOFER,
         AMPSIDE,
@@ -61,7 +60,6 @@ public class ShooterSubsystem extends SubsystemBase {
     private final EnumMap<Speed, ShooterSpeed> shooterSpeeds = new EnumMap<>(Map.ofEntries(
             Map.entry(Speed.STOP, new ShooterSpeed(Constants.Shooter.stopSpeed, Constants.Shooter.stopSpeed)),
             Map.entry(Speed.INTAKE, new ShooterSpeed(Constants.Shooter.intakeSpeed, Constants.Shooter.intakeSpeed)),
-            Map.entry(Speed.IDLE, new ShooterSpeed(Constants.Shooter.idleSpeed, Constants.Shooter.idleSpeed)),
             Map.entry(Speed.AMP, new ShooterSpeed(375, 1025)),
             Map.entry(Speed.SUBWOOFER, new ShooterSpeed(1360, 2830)),
             Map.entry(Speed.AMPSIDE, new ShooterSpeed(2850, 2050)),
@@ -173,10 +171,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void setRPM(double rpm) {
         setCurrentSpeed(new ShooterSpeed(rpm, rpm));
-    }
-
-    public void idle() {
-        setCurrentSpeed(Speed.IDLE);
     }
 
     public void intake() {
