@@ -58,7 +58,7 @@ public class RobotContainer {
                         () -> -translation.get() * Constants.driveStickSensitivity,
                         () -> -strafe.get() * Constants.driveStickSensitivity,
                         () -> -rotation.get() * Constants.turnStickSensitivity,
-                        () -> SmartDashboard.getNumber("TeleOp Speed Governor", 0.20)));
+                        s_Swerve::getSpeedLimitRot));
 
         s_Shooter.setDefaultCommand(Commands.startEnd(s_Shooter::stop, () -> {}, s_Shooter).withName("Shooter stop"));
         s_Index.setDefaultCommand(Commands.startEnd(s_Index::stop, () -> {}, s_Index).withName("Index Stop"));

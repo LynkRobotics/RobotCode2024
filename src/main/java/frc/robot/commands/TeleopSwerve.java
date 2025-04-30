@@ -37,6 +37,8 @@ public class TeleopSwerve extends Command {
 
         double teleOpMult = SmartDashboard.getNumber("TeleOp Speed Governor", 1.0);
         translationVal *= teleOpMult;
+        strafeVal *= teleOpMult;
+        rotationVal *= teleOpMult;
 
         // Driver position is inverted for Red alliance, so adjust field-oriented controls
         if (Robot.isRed()) {
