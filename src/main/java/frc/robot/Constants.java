@@ -188,8 +188,8 @@ public final class Constants {
         /* Motor Speed Values */
         public static final double intakeSpeed = -800;
         public static final double stopSpeed = 0.00;
-        public static final double topSpeed = 6000;
-        public static final double maxRPMError = 45.0;
+        public static final double topSpeed = 5500;
+        public static final double maxRPMError = 50.0;
         /* Motor Config Values */
         public static final double peakForwardVoltage = 12.0;
         public static final double peakReverseVoltage = -12.0;
