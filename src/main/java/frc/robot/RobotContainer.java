@@ -61,7 +61,7 @@ public class RobotContainer {
                         () -> -rotation.get() * Constants.turnStickSensitivity,
                         s_Swerve::getSpeedLimitRot));
 
-        s_Shooter.setDefaultCommand(Commands.startEnd(s_Shooter::idle, () -> {}, s_Shooter).withName("Shooter Idle"));
+        s_Shooter.setDefaultCommand(Commands.startEnd(s_Shooter::stop, () -> {}, s_Shooter).withName("Shooter stop"));
         s_Index.setDefaultCommand(Commands.startEnd(s_Index::stop, () -> {}, s_Index).withName("Index Stop"));
 
         // During calibration allow for direct control

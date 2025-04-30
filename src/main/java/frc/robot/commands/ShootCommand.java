@@ -86,8 +86,8 @@ public class ShootCommand extends Command {
         // Stop feeding
         index.stop();
 
-        // Restore idle speed
-        shooter.idle();
+        // Stop shooter wheels
+        shooter.stop();
 
         // Restore default shot
         shooter.setNextShot(null);
